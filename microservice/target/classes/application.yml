@@ -1,0 +1,12 @@
+server:
+  port:8080
+spring:
+  application:
+    name: smaple-spring-rest-service
+  datasource:
+    url: jdbc:mysql://localhost/sakila
+    username: ea
+    password: cs544
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true

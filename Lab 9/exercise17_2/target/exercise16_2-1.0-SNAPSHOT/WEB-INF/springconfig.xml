@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+			http://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/context
+			http://www.springframework.org/schema/context/spring-context.xsd
+			http://www.springframework.org/schema/tx
+  			http://www.springframework.org/schema/tx/spring-tx.xsd">
+
+    <tx:annotation-driven transaction-manager="txManager"/>
+
+
+    <!--  Added beans for DAO and Service -->
+    <bean id="studentService" class="cs544.exercise17_2.StudentService">
+        <property name="studentdao" ref="studentdao"/>
+    </bean>
+
+    <bean id="studentdao" class="cs544.exercise17_2.StudentDAO">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+    <!-- 	data source bean -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close">
+        <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
+        <property name="url" value="jdbc:mysql://localhost:3306/cs544_16_2"/>
+        <property name="username" value="ea"/>
+        <property name="password" value="cs544"/>
+    </bean>
+
+    <!-- Hibernate 4 Annotation SessionFactory Bean definition -->
+    <bean id="sessionFactory"
+          class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"/>
+        <property name="hibernateProperties" ref="hibernateProperties"/>
+        <!--<property name="packagesToScan" value="cs544.exercise17_2"/> -->
+        <property name="annotatedClasses">
+            <list>
+                <value>cs544.exercise17_2.Course</value>
+                <value>cs544.exercise17_2.Student</value>
+            </list>
+        </property>
+    </bean>
+    <bean id="hibernateProperties"
+          class="org.springframework.beans.factory.config.PropertiesFactoryBean">
+        <property name="properties">
+            <props>
+                <!-- <prop key="hibernate.hbm2ddl.auto">create</prop> -->
+                <prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+                <prop key="connection.pool.size">1</prop>
+                <prop key="hibernate.show_sql">true</prop>
+                <prop key="hibernate.format_sql">false</prop>
+                <!-- Always drop and recreate the database schema on startup -->
+                <prop key="hbm2ddl.auto">create</prop>
+                <!-- <prop key="hibernate.current_session_context_class">thread</prop>
+                            spring manages the Tx and session -->
+            </props>
+        </property>
+    </bean>
+    <!-- 	Transaction manager -->
+    <bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+        <property name="sessionFactory" ref="sessionFactory"/>
+    </bean>
+
+</beans>
